@@ -42,6 +42,9 @@ class ThumborMapping {
                 this.edits.resize.height = Number(dims[1]);
 
             }
+        } else {
+            // If no dimPath is available we want to redirect to our highres cdn to avoid payloads that are too big for lambda
+            this.edits.noDimPath = true;
         }
 
         // Parse the image path

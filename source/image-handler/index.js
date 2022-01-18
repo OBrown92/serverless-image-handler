@@ -20,13 +20,26 @@ exports.handler = async (event) => {
     const imageHandler = new ImageHandler();
     try {
         const request = await imageRequest.setup(event);
+        let response = {};
         console.log(request);
-        const processedRequest = await imageHandler.process(request);
-        const response = {
-            "statusCode": 200,
-            "headers" : getResponseHeaders(),
-            "body": processedRequest,
-            "isBase64Encoded": true
+        if (request.edits.noDimPath) {
+            // Redirect to HighresCDN
+            response = {
+                "statusCode": 301,
+                "headers": {
+                    "Location": `${process.env.HIGHRES_CDN_URL}/${request.key}`,
+                }
+            }
+            console.log("🚀 ~ file: index.js ~ line 28 ~ exports.handler= ~ response", response)
+        } else {
+            const processedRequest = await imageHandler.process(request);
+            response = {
+                "statusCode": 200,
+                "headers" : getResponseHeaders(),
+                "body": processedRequest,
+                "isBase64Encoded": true
+            }
+            console.log("🚀 ~ file: index.js ~ line 37 ~ exports.handler= ~ response", response)
         }
         return response;
     } catch (err) {
