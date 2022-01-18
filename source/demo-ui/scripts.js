@@ -1,12 +1,12 @@
 /*********************************************************************************************************************
  *  Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.                                           *
  *                                                                                                                    *
- *  Licensed under the Amazon Software License (the "License"). You may not use this file except in compliance        *
+ *  Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance    *
  *  with the License. A copy of the License is located at                                                             *
  *                                                                                                                    *
- *      http://aws.amazon.com/asl/                                                                                    *
+ *      http://www.apache.org/licenses/LICENSE-2.0                                                                    *
  *                                                                                                                    *
- *  or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES *
+ *  or in the 'license' file accompanying this file. This file is distributed on an 'AS IS' BASIS, WITHOUT WARRANTIES *
  *  OR CONDITIONS OF ANY KIND, express or implied. See the License for the specific language governing permissions    *
  *  and limitations under the License.                                                                                *
  *********************************************************************************************************************/
@@ -55,14 +55,14 @@ function getPreviewImage() {
         _edits.resize.fit = _resize;
     }
     if (_fillColor !== "") { _edits.resize.background = hexToRgbA(_fillColor, 1) }
-    if (_backgroundColor !== "") { _edits.flatten = { background: hexToRgbA(_backgroundColor, undefined) }}
+    if (_backgroundColor !== "") { _edits.flatten = { background: hexToRgbA(_backgroundColor, undefined) } }
     if (_grayscale) { _edits.grayscale = _grayscale }
     if (_flip) { _edits.flip = _flip }
     if (_flop) { _edits.flop = _flop }
     if (_negative) { _edits.negate = _negative }
     if (_flatten) { _edits.flatten = _flatten }
     if (_normalize) { _edits.normalise = _normalize }
-    if (_rgb !== "") { 
+    if (_rgb !== "") {
         const input = _rgb.replace(/\s+/g, '');
         const arr = input.split(',');
         const rgb = { r: Number(arr[0]), g: Number(arr[1]), b: Number(arr[2]) };
@@ -98,19 +98,19 @@ function getPreviewImage() {
 
 function hexToRgbA(hex, _alpha) {
     var c;
-    if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
-        c= hex.substring(1).split('');
-        if(c.length== 3){
-            c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+    if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+        c = hex.substring(1).split('');
+        if (c.length == 3) {
+            c = [c[0], c[0], c[1], c[1], c[2], c[2]];
         }
-        c= '0x'+c.join('');
-        return { r: ((c>>16)&255), g: ((c>>8)&255), b: (c&255), alpha: Number(_alpha)};
+        c = '0x' + c.join('');
+        return { r: ((c >> 16) & 255), g: ((c >> 8) & 255), b: (c & 255), alpha: Number(_alpha) };
     }
     throw new Error('Bad Hex');
 }
 
 function resetEdits() {
     $('.form-control').val('');
-	document.getElementById('editor-resize-mode').selectedIndex = 0;
-	$(".form-check-input").prop('checked', false);
+    document.getElementById('editor-resize-mode').selectedIndex = 0;
+    $(".form-check-input").prop('checked', false);
 }
