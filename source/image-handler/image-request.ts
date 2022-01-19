@@ -37,6 +37,11 @@ export class ImageRequest {
       imageRequestInfo.key = this.parseImageKey(event, imageRequestInfo.requestType);
       imageRequestInfo.edits = this.parseImageEdits(event, imageRequestInfo.requestType);
 
+      if (Object.keys(imageRequestInfo.edits).length === 0) {
+        // return early if no edits provided
+        return imageRequestInfo;
+      }
+
       const originalImage = await this.getOriginalImage(imageRequestInfo.bucket, imageRequestInfo.key);
       imageRequestInfo = { ...imageRequestInfo, ...originalImage };
 

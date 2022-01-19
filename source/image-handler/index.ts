@@ -9,7 +9,7 @@ import { getOptions } from '../solution-utils/get-options';
 import { isNullOrWhiteSpace } from '../solution-utils/helpers';
 import { ImageHandler } from './image-handler';
 import { ImageRequest } from './image-request';
-import { Headers, ImageHandlerEvent, ImageHandlerExecutionResult, StatusCodes } from './lib';
+import { Headers, ImageHandlerEvent, ImageHandlerExecutionResult, ImageRequestInfo, StatusCodes } from './lib';
 import { SecretProvider } from './secret-provider';
 
 const awsSdkOptions = getOptions();
@@ -29,10 +29,16 @@ export async function handler(event: ImageHandlerEvent): Promise<ImageHandlerExe
   const imageRequest = new ImageRequest(s3Client, secretProvider);
   const imageHandler = new ImageHandler(s3Client, rekognitionClient);
   const isAlb = event.requestContext && Object.prototype.hasOwnProperty.call(event.requestContext, 'elb');
+  let imageRequestInfo: ImageRequestInfo = <ImageRequestInfo>{};
 
   try {
-    const imageRequestInfo = await imageRequest.setup(event);
+    imageRequestInfo = await imageRequest.setup(event);
     console.info(imageRequestInfo);
+
+    if (Object.keys(imageRequestInfo.edits).length === 0) {
+      console.info('no edits provided, fallback to highres cdn.')
+      return getRedirectResponse(imageRequestInfo);
+    }
 
     const processedRequest = await imageHandler.process(imageRequestInfo);
 
@@ -56,6 +62,11 @@ export async function handler(event: ImageHandlerEvent): Promise<ImageHandlerExe
     };
   } catch (error) {
     console.error(error);
+
+    // Fallback to highres cdn if image is too large
+    if (error.code === 'TooLargeImageException') {
+      return getRedirectResponse(imageRequestInfo);
+    }
 
     // Default fallback image
     const { ENABLE_DEFAULT_FALLBACK_IMAGE, DEFAULT_FALLBACK_IMAGE_BUCKET, DEFAULT_FALLBACK_IMAGE_KEY } = process.env;
@@ -124,4 +135,20 @@ function getResponseHeaders(isError: boolean = false, isAlb: boolean = false): H
   }
 
   return headers;
+}
+
+/**
+ * Returns the redirect headers to our highres cdn
+ * @param imageRequestInfo 
+ * @returns Headers.
+ */
+function getRedirectResponse(imageRequestInfo: ImageRequestInfo): ImageHandlerExecutionResult {
+  return {
+    statusCode: StatusCodes.MOVED,
+    isBase64Encoded: false,
+    headers: {
+      "Location": `${process.env.HIGHRES_CDN_URL}/${imageRequestInfo.key}`,
+    },
+    body: null
+  }
 }
