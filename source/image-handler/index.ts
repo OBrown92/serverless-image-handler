@@ -35,7 +35,8 @@ export async function handler(event: ImageHandlerEvent): Promise<ImageHandlerExe
     imageRequestInfo = await imageRequest.setup(event);
     console.info(imageRequestInfo);
 
-    if (Object.keys(imageRequestInfo.edits).length === 0) {
+    // Redirect if no edits but a picture is provided
+    if (Object.keys(imageRequestInfo.edits).length === 0 && imageRequestInfo.key !== '') {
       console.info('no edits provided, fallback to highres cdn.')
       return getRedirectResponse(imageRequestInfo);
     }
