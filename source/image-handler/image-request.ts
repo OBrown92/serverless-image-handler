@@ -396,6 +396,8 @@ export class ImageRequest {
       case 'FFD8FFEE':
       case 'FFD8FFE1':
         return 'image/jpeg';
+      case 'FFD8FFE2':
+        return 'image/jpeg';
       case '52494646':
         return 'image/webp';
       case '49492A00':
