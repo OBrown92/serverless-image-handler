@@ -30,8 +30,10 @@ export async function handler(event: ImageHandlerEvent): Promise<ImageHandlerExe
   const imageHandler = new ImageHandler(s3Client, rekognitionClient);
   const isAlb = event.requestContext && Object.prototype.hasOwnProperty.call(event.requestContext, "elb");
 
+  let imageRequestInfo: ImageRequestInfo = {} as ImageRequestInfo;
+
   try {
-    const imageRequestInfo = await imageRequest.setup(event);
+    imageRequestInfo = await imageRequest.setup(event);
     console.info(imageRequestInfo);
 
     // Redirect if no edits but a picture is provided
