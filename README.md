@@ -46,7 +46,7 @@ In addition to the AWS Solutions Constructs, the solution uses AWS CDK directly 
 ## Prerequisites for Customization
 
 - [AWS Command Line Interface](https://aws.amazon.com/cli/)
-- Node.js 14.x or later
+- Node.js 16.x or later
 
 ### 1. Clone the repository
 
@@ -60,7 +60,8 @@ export MAIN_DIRECTORY=$PWD
 
 ```bash
 export REGION=aws-region-code # the AWS region to launch the solution (e.g. us-east-1)
-export DIST_OUTPUT_BUCKET=my-bucket-name # bucket where customized code will reside, randomized name recommended
+export BUCKET_PREFIX=my-bucket-name # the bucket prefix, randomized name recommended
+export BUCKET_NAME=$BUCKET_PREFIX-$REGION # the bucket name where customized code will reside
 export SOLUTION_NAME=my-solution-name # the solution name
 export VERSION=my-version # version number for the customized code
 ```
@@ -80,12 +81,12 @@ chmod +x run-unit-tests.sh
 ```bash
 cd $MAIN_DIRECTORY/deployment
 chmod +x build-s3-dist.sh
-./build-s3-dist.sh $DIST_OUTPUT_BUCKET $SOLUTION_NAME $VERSION
+./build-s3-dist.sh $BUCKET_PREFIX $SOLUTION_NAME $VERSION
 ```
 
 ## Deploy
 
-- Deploy the distributable to the Amazon S3 bucket in your account. Make sure you are uploading the distributable to the `$DIST_OUTPUT_BUCKET-$REGION` bucket.
+- Deploy the distributable to the Amazon S3 bucket in your account. Make sure you are uploading the files in `deployment/global-s3-assets` and `deployment/regional-s3-assets` to `$BUCKET_NAME/$SOLUTION_NAME/$VERSION`.
 - Get the link of the solution template uploaded to your Amazon S3 bucket.
 - Deploy the solution to your account by launching a new AWS CloudFormation stack using the link of the solution template in Amazon S3.
 
@@ -110,9 +111,11 @@ This solution collects anonymous operational metrics to help AWS improve the qua
 - [@frankenbubble](https://github.com/frankenbubble) for [#302](https://github.com/aws-solutions/serverless-image-handler/pull/302)
 - [@guidev](https://github.com/guidev) for [#309](https://github.com/aws-solutions/serverless-image-handler/pull/309)
 - [@njtmead](https://github.com/njtmead) for [#276](https://github.com/aws-solutions/serverless-image-handler/pull/276)
+- [@StaymanHou](https://github.com/StaymanHou) for [#320](https://github.com/aws-solutions/serverless-image-handler/pull/320)
+- [@alenpaulvarghese](https://github.com/alenpaulvarghese) for [#392](https://github.com/aws-solutions/serverless-image-handler/pull/392)
 
 # License
 
-Copyright 2019-2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 SPDX-License-Identifier: Apache-2.0
